@@ -1,6 +1,9 @@
 # Build cache
 .sconsign.dblite
 
+# DLL cache
+demo/bin/
+
 # External Dependencies
 external/
 godot-cpp/

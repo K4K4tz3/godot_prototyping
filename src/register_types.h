@@ -2,6 +2,7 @@
 #define GDEXAMPLE_REGISTER_TYPES_H
 
 #include "gameManager.hpp"
+#include "playerController.hpp"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>

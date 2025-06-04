@@ -10,7 +10,9 @@
 #include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/classes/camera2d.hpp>
+#include <godot_cpp/classes/packed_scene.hpp>
 
+#include "playerController.hpp"
 
 using namespace godot;
 
@@ -18,6 +20,11 @@ class GameManager : public Node {
     GDCLASS(GameManager, Node)
 
 private:
+    Ref<PackedScene> playerScene_;
+    PlayerController *playerInstance_;
+
+    void spawnPlayer();
+    void despawnPlayer();
 
 protected:
     static void _bind_methods();
