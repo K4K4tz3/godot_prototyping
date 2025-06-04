@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://rlkdp8gt4i6h"]
+
+[node name="Main" type="Node"]
+
+[node name="GameManager" type="GameManager" parent="."]
+
+[node name="MeshGenerator" type="MeshGenerator" parent="."]

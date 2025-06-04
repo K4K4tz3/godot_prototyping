@@ -1,0 +1,11 @@
+CollisionShape3D
+Player
+MeshGenerator
+Sprite2D
+GameManager
+CollisionShape2D
+Camera2D
+EditorPlugin
+CharacterBody2D
+GDExample
+Node

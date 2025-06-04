@@ -1,0 +1,8 @@
+# Build cache
+.sconsign.dblite
+
+# External Dependencies
+external/
+godot-cpp/
+
+/extension_api.json
