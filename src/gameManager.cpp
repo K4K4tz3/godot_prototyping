@@ -34,28 +34,30 @@ void GameManager::_input(const Ref<InputEventKey> &event) {
 void GameManager::_process(double delta) {
 }
 
+/**
+ * @brief Loads, instantiates and adds the player to the game world
+ * 
+ */
 void GameManager::spawnPlayer() {
+    // Load the resource into the reference
     playerScene_ = ResourceLoader::get_singleton()->load("res://player.tscn");
-
-    if (playerScene_.is_valid())
-    {
-        playerInstance_ = Object::cast_to<PlayerController>(playerScene_->instantiate());
-
-        if (playerScene_.is_valid())
-        {
-            playerInstance_->set_name("Player");
-            add_child(playerInstance_);
-            playerInstance_->set_position(Vector3(0, 0, 0));
-
-            Camera3D* camera = Object::cast_to<Camera3D>(playerInstance_->find_child("Camera3D"));
-            if (camera)
-                camera->make_current();
-        }
-        else
-            UtilityFunctions::print("ERROR::INSTANTIATION_NOT_WORKED: PlayerController from player.tscn could not be instantiated");
-    }
-    else
+    if (!playerScene_.is_valid())
         UtilityFunctions::print("ERROR::RESOURCE: player.tscn could not be found or loaded");
+    
+    // If succesfull instantiate player
+    playerInstance_ = Object::cast_to<PlayerController>(playerScene_->instantiate());
+    if (playerScene_.is_valid())
+        UtilityFunctions::print("ERROR::INSTANTIATION_NOT_WORKED: PlayerController from player.tscn could not be instantiated");
+
+    // Add instance to scene
+    playerInstance_->set_name("Player");
+    add_child(playerInstance_);
+    playerInstance_->set_position(Vector3(0, 0, 0));
+
+    // Make Player's camera to current camera
+    Camera3D* camera = Object::cast_to<Camera3D>(playerInstance_->find_child("Camera3D"));
+    if (camera)
+        camera->make_current();
 }
 void GameManager::despawnPlayer() {
     playerInstance_->queue_free();
