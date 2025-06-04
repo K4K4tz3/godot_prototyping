@@ -42,12 +42,19 @@ void GameManager::spawnPlayer() {
     // Load the resource into the reference
     playerScene_ = ResourceLoader::get_singleton()->load("res://player.tscn");
     if (!playerScene_.is_valid())
+    {
         UtilityFunctions::print("ERROR::RESOURCE: player.tscn could not be found or loaded");
+        return;
+    }
     
     // If succesfull instantiate player
     playerInstance_ = Object::cast_to<PlayerController>(playerScene_->instantiate());
-    if (playerScene_.is_valid())
+    if (!playerScene_.is_valid())
+    {
         UtilityFunctions::print("ERROR::INSTANTIATION_NOT_WORKED: PlayerController from player.tscn could not be instantiated");
+        UtilityFunctions::push_error("ERROR::INSTANTIATION_NOT_WORKED: PlayerController from player.tscn could not be instantiated");
+        return;
+    }
 
     // Add instance to scene
     playerInstance_->set_name("Player");
