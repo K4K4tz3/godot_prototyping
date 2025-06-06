@@ -16,21 +16,13 @@ using namespace godot;
 class PlayerController : public CharacterBody3D {
     GDCLASS(PlayerController, CharacterBody3D)
 
+
 private:
-    float speed_;
-    float turnSpeed_;
+    float m_speed;
 
-    Vector3 direction_;
-    Vector3 velocity_;
-    float aimVelocity_;
+    Vector3 m_direction;
+    Vector3 m_velocity;
     
-    Vector2 rotationSensitivity = Vector2(0.1, 0.1);
-    Vector2 smoothedRotation = Vector2();
-    Vector2 targetRotation = Vector2();
-    float smoothingSpeed = 6.0f;
-
-    bool pauseControl_ = false;
-
 protected:
     static void _bind_methods();
 public:
@@ -38,14 +30,28 @@ public:
     ~PlayerController();
 
     void _ready();
-    void _input(const Ref<InputEventKey> &event);
-    void _unhandled_input(const Ref<InputEvent> &event);
+    void _input(const Ref<InputEventKey> &m_event);
+    void _unhandled_input(const Ref<InputEvent> &m_event);
     void _physics_process(double a_delta);
     
-    void setSpeed(const float a_speed) { speed_ = a_speed; };
-    float getSpeed() const { return speed_; };
-    void setTurnSpeed(const float a_turnSpeed) { turnSpeed_ = a_turnSpeed; };
-    float getTurnSpeed() const { return turnSpeed_; };
+    void setSpeed(const float a_speed) { m_speed = a_speed; };
+    float getSpeed() const { return m_speed; };
+//
+// Camera Movement
+//
+private:
+    Vector2 m_rotationSensitivity = Vector2(0.1, 0.1);
+    Vector2 m_smoothedRotation = Vector2();
+    Vector2 m_targetRotation = Vector2();
+    float m_smoothingSpeed = 6.0f;
+
+    bool m_pauseControl = false;
+
+public:
+    void setRotationSensitivity(const Vector2 a_rotationSensitivity) { m_rotationSensitivity = a_rotationSensitivity; };
+    Vector2 getRotationSensitivity() { return m_rotationSensitivity; };
+    void setSmoothingSpeed(const float a_smoothingSpeed) { m_smoothingSpeed = a_smoothingSpeed; };
+    float getSmoothingSpeed() const { return m_smoothingSpeed; };
 };
 
 #endif

@@ -4,8 +4,7 @@ PlayerController::PlayerController() {
     set_physics_process(true);
     set_process_unhandled_input(true);
 
-    speed_ = 10;
-    turnSpeed_ = 1;
+    m_speed = 10;
 }
 
 PlayerController::~PlayerController() {
@@ -18,10 +17,10 @@ void PlayerController::_bind_methods() {
 
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "speed"), "setSpeed", "getSpeed");
 
-    ClassDB::bind_method(D_METHOD("getTurnSpeed"), &PlayerController::getTurnSpeed);
-    ClassDB::bind_method(D_METHOD("setTurnSpeed", "turnSpeed_"), &PlayerController::setTurnSpeed);
+    ClassDB::bind_method(D_METHOD("getRotationSensitivity"), &PlayerController::getRotationSensitivity);
+    ClassDB::bind_method(D_METHOD("setRotationSensitivity", "m_rotationSensitivity"), &PlayerController::setRotationSensitivity);
 
-    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "turnSpeed"), "setTurnSpeed", "getTurnSpeed");
+    ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "m_rotationSensitivity"), "setRotationSensitivity", "getRotationSensitivity");
 }
 
 void PlayerController::_ready() {
@@ -31,55 +30,61 @@ void PlayerController::_input(const Ref<InputEventKey> &event) {
     if (!event.is_valid())
         return;
 
+    // If t is pressed, either freeze the camera movement or unfreeze it
     if (event->is_pressed() && event->get_keycode() == Key::KEY_T) 
     {
-        pauseControl_ = pauseControl_ ? false : true;
+        if (m_pauseControl)
+        {
+            // Switches to play -> mouse dissapears and camera movement is free
+            Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_CAPTURED);
+            m_pauseControl = false;
+        }
+        else {
+            // Switches to freeze -> mouse appears and camera movement freezes
+            Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_VISIBLE);
+            m_pauseControl = true;
+        }
     }
 }
-void PlayerController::_unhandled_input(const Ref<InputEvent> &event) {
-    Ref<InputEventMouseMotion> mouseMotion = event;
+void PlayerController::_unhandled_input(const Ref<InputEvent> &a_event) {
+    Ref<InputEventMouseMotion> mouseMotion = a_event;
 
     if (!mouseMotion.is_valid())
         return;
 
+    // If mouse input is valid, update the target with the motion and clamp the vertical movement
     Vector2 motion = mouseMotion->get_relative();
-    targetRotation.y -= motion.x * rotationSensitivity.x;
-    targetRotation.x -= motion.y * rotationSensitivity.y;
+    m_targetRotation.y -= motion.x * m_rotationSensitivity.x;
+    m_targetRotation.x -= motion.y * m_rotationSensitivity.y;
 
-    targetRotation.x = CLAMP(targetRotation.x, -90.0f, 90.0f);
+    m_targetRotation.x = CLAMP(m_targetRotation.x, -90.0f, 90.0f);
 }
 void PlayerController::_physics_process(double a_delta) {
-    direction_.zero();
-    velocity_.zero();
-    aimVelocity_ = 0;
+    m_direction.zero();
+    m_velocity.zero();
 
-    if (Input::get_singleton()->is_key_pressed(KEY_E)) direction_.z -= 1; // Forward
-    if (Input::get_singleton()->is_key_pressed(KEY_D)) direction_.z += 1; // Back
-    if (Input::get_singleton()->is_key_pressed(KEY_S)) direction_.x -= 1; // Left
-    if (Input::get_singleton()->is_key_pressed(KEY_F)) direction_.x += 1; // Right
+    if (Input::get_singleton()->is_key_pressed(KEY_E)) m_direction.z -= 1; // Forward
+    if (Input::get_singleton()->is_key_pressed(KEY_D)) m_direction.z += 1; // Back
+    if (Input::get_singleton()->is_key_pressed(KEY_S)) m_direction.x -= 1; // Left
+    if (Input::get_singleton()->is_key_pressed(KEY_F)) m_direction.x += 1; // Right
 
-    if (direction_ != Vector3(0, 0, 0))
-    {
-        direction_.normalized();
-    }
-
-    if (direction_ != Vector3(0, 0, 0))
-        direction_.normalized();
+    if (m_direction != Vector3(0, 0, 0))
+        m_direction.normalized();
     
-    direction_ = to_global(direction_) - get_transform().get_origin();
+    // convert direction to to global and calculate velocity
+    m_direction = to_global(m_direction) - get_transform().get_origin();
+    m_velocity.x = m_direction.x * m_speed * a_delta;
+    m_velocity.z = m_direction.z * m_speed * a_delta;
 
-    velocity_.x = direction_.x * speed_ * a_delta;
-    velocity_.z = direction_.z * speed_ * a_delta;
-
-    set_velocity(velocity_);
+    set_velocity(m_velocity);
     move_and_slide();
 
 
-    if (pauseControl_)
+    if (m_pauseControl)
         return;
 
-    // camera
-    smoothedRotation = smoothedRotation.lerp(targetRotation, (float)a_delta * smoothingSpeed);
+    // Lerp to the targetRotation, which is set in the unhandled input and update the node's position
+    m_smoothedRotation = m_smoothedRotation.lerp(m_targetRotation, (float)a_delta * m_smoothingSpeed);
 
-    set_rotation_degrees(Vector3(smoothedRotation.x, smoothedRotation.y, 0));
+    set_rotation_degrees(Vector3(m_smoothedRotation.x, m_smoothedRotation.y, 0));
 }
