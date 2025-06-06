@@ -72,18 +72,24 @@ void PlayerController::_physics_process(double a_delta) {
     if (Input::get_singleton()->is_key_pressed(KEY_D)) m_direction.z += 1; // Back
     if (Input::get_singleton()->is_key_pressed(KEY_S)) m_direction.x -= 1; // Left
     if (Input::get_singleton()->is_key_pressed(KEY_F)) m_direction.x += 1; // Right
+    if (Input::get_singleton()->is_key_pressed(KEY_SPACE)) m_direction.y += 1; // Up
+    if (Input::get_singleton()->is_key_pressed(KEY_CTRL)) m_direction.y -= 1; // Down
+
+    UtilityFunctions::print("Direction X: ", std::floor(m_direction.x * 10.0) / 10.0, " Z: ", std::floor(m_direction.z * 10.0) / 10.0, " Y: ", std::floor(m_direction.y * 10.0) / 10.0);
 
     if (m_direction != Vector3(0, 0, 0))
         m_direction.normalized();
     
-    // convert direction to to global and calculate velocity
-    m_direction = to_global(m_direction) - get_transform().get_origin();
-    m_velocity.x = m_direction.x * m_speed * a_delta;
-    m_velocity.z = m_direction.z * m_speed * a_delta;
+    // global movement
+    Transform3D transform = get_global_transform();
 
-    set_velocity(m_velocity);
-    move_and_slide();
+    Vector3 move_dir = (transform.basis.get_column(0) * m_direction.x) + 
+                       (transform.basis.get_column(1) * m_direction.y) +
+                       (transform.basis.get_column(2) * m_direction.z);
+    move_dir = move_dir.normalized();
 
+    Vector3 new_pos = get_global_position() + move_dir * m_speed * a_delta;
+    set_global_position(new_pos);
 
     if (m_pauseControl)
         return;

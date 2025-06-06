@@ -18,10 +18,15 @@ class PlayerController : public CharacterBody3D {
 
 
 private:
+    int m_movementMode;
     float m_speed;
 
     Vector3 m_direction;
     Vector3 m_velocity;
+    Vector3 m_position;
+
+    void moveGlobal();
+    void moveLocal();
     
 protected:
     static void _bind_methods();
