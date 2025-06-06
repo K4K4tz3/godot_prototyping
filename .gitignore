@@ -3,10 +3,12 @@
 
 # DLL cache
 demo/bin/lib/
-demo/bin/gdexample.gdextension
+demo/bin/*.uid
 
 # External Dependencies
 external/
 godot-cpp/
 
 /extension_api.json
+
+src/*.obj
