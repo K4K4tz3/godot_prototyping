@@ -13,14 +13,19 @@ PlayerController::~PlayerController() {
 
 void PlayerController::_bind_methods() {
     ClassDB::bind_method(D_METHOD("getSpeed"), &PlayerController::getSpeed);
-    ClassDB::bind_method(D_METHOD("setSpeed", "speed_"), &PlayerController::setSpeed);
+    ClassDB::bind_method(D_METHOD("setSpeed", "m_speed"), &PlayerController::setSpeed);
 
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "speed"), "setSpeed", "getSpeed");
 
     ClassDB::bind_method(D_METHOD("getRotationSensitivity"), &PlayerController::getRotationSensitivity);
     ClassDB::bind_method(D_METHOD("setRotationSensitivity", "m_rotationSensitivity"), &PlayerController::setRotationSensitivity);
 
-    ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "m_rotationSensitivity"), "setRotationSensitivity", "getRotationSensitivity");
+    ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "rotationSensitivity"), "setRotationSensitivity", "getRotationSensitivity");
+
+    ClassDB::bind_method(D_METHOD("getSmoothingSpeed"), &PlayerController::getSmoothingSpeed);
+    ClassDB::bind_method(D_METHOD("setSmoothingSpeed", "m_smoothingSpeed"), &PlayerController::setSmoothingSpeed);
+
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "smoothingSpeed"), "setSmoothingSpeed", "getSmoothingSpeed");
 }
 
 void PlayerController::_ready() {
