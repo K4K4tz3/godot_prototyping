@@ -2,7 +2,8 @@
 .sconsign.dblite
 
 # DLL cache
-demo/bin/
+demo/bin/lib/
+demo/bin/gdexample.gdextension
 
 # External Dependencies
 external/
